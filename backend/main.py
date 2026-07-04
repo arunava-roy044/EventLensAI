@@ -1,9 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+
+from database import engine, get_db, Base
+from models import Holding
+
+Base.metadata.create_all(bind=engine)  # creates the holdings table if it doesn't exist
 
 app = FastAPI()
 
-# Allow the React frontend (running on localhost:5173) to call this API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -17,12 +22,11 @@ def read_root():
     return {"message": "EventLens AI backend is running"}
 
 @app.get("/portfolio")
-def get_portfolio():
-    # Hardcoded for now — we'll pull this from PostgreSQL soon
+def get_portfolio(db: Session = Depends(get_db)):
+    holdings = db.query(Holding).all()
     return {
         "holdings": [
-            {"ticker": "TSM", "shares": 50, "value": 8500},
-            {"ticker": "NVDA", "shares": 20, "value": 22000},
-            {"ticker": "AAPL", "shares": 30, "value": 6300},
+            {"ticker": h.ticker, "shares": h.shares, "value": h.value}
+            for h in holdings
         ]
     }
