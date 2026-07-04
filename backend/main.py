@@ -29,15 +29,39 @@ def get_portfolio(db: Session = Depends(get_db)):
     result = []
 
     for h in holdings:
-        ticker_data = yf.Ticker(h.ticker)
-        price = ticker_data.history(period="1d")["Close"].iloc[-1]
-        result.append({
-            "id": h.id,
-            "ticker": h.ticker,
-            "shares": h.shares,
-            "price": round(price, 2),
-            "value": round(price * h.shares, 2),
-        })
+        try:
+            ticker_data = yf.Ticker(h.ticker)
+            hist = ticker_data.history(period="1d")
+
+            if hist.empty:
+                # No data available right now — skip pricing but still show the holding
+                result.append({
+                    "id": h.id,
+                    "ticker": h.ticker,
+                    "shares": h.shares,
+                    "price": None,
+                    "value": None,
+                    "error": "Price temporarily unavailable",
+                })
+                continue
+
+            price = hist["Close"].iloc[-1]
+            result.append({
+                "id": h.id,
+                "ticker": h.ticker,
+                "shares": h.shares,
+                "price": round(price, 2),
+                "value": round(price * h.shares, 2),
+            })
+        except Exception as e:
+            result.append({
+                "id": h.id,
+                "ticker": h.ticker,
+                "shares": h.shares,
+                "price": None,
+                "value": None,
+                "error": str(e),
+            })
 
     return {"holdings": result}
 
@@ -69,3 +93,17 @@ def delete_holding(holding_id: int, db: Session = Depends(get_db)):
     db.delete(holding)
     db.commit()
     return {"message": "Holding deleted"}
+
+
+@app.get("/search")
+def search_ticker(q: str):
+    if not q or len(q) < 1:
+        return {"results": []}
+
+    search = yf.Search(q, max_results=6)
+    results = [
+        {"symbol": quote.get("symbol"), "name": quote.get("shortname") or quote.get("longname")}
+        for quote in search.quotes
+        if quote.get("symbol")
+    ]
+    return {"results": results}
