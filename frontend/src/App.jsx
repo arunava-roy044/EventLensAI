@@ -31,9 +31,9 @@ function App() {
         <div className="space-y-3">
           {holdings.map((h) => (
             <div key={h.ticker} className="bg-gray-800 p-4 rounded-lg flex justify-between">
-              <span className="font-semibold">{h.ticker}</span>
-              <span>{h.shares} shares — ${h.value.toLocaleString()}</span>
-            </div>
+  <span className="font-semibold">{h.ticker}</span>
+  <span>{h.shares} shares @ ${h.price} = ${h.value.toLocaleString()}</span>
+</div>
           ))}
         </div>
       )}

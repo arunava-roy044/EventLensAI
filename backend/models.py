@@ -7,4 +7,3 @@ class Holding(Base):
     id = Column(Integer, primary_key=True, index=True)
     ticker = Column(String, index=True)
     shares = Column(Integer)
-    value = Column(Float)

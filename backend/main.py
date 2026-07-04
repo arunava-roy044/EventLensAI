@@ -1,3 +1,4 @@
+import yfinance as yf
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -24,9 +25,16 @@ def read_root():
 @app.get("/portfolio")
 def get_portfolio(db: Session = Depends(get_db)):
     holdings = db.query(Holding).all()
-    return {
-        "holdings": [
-            {"ticker": h.ticker, "shares": h.shares, "value": h.value}
-            for h in holdings
-        ]
-    }
+    result = []
+
+    for h in holdings:
+        ticker_data = yf.Ticker(h.ticker)
+        price = ticker_data.history(period="1d")["Close"].iloc[-1]
+        result.append({
+            "ticker": h.ticker,
+            "shares": h.shares,
+            "price": round(price, 2),
+            "value": round(price * h.shares, 2),
+        })
+
+    return {"holdings": result}
