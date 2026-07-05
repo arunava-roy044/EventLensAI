@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import { PriceHistoryModal } from './PriceHistoryModal'
 
 export function PortfolioList({ holdings, loading, error, onDelete, onUpdate }) {
@@ -36,13 +37,30 @@ export function PortfolioList({ holdings, loading, error, onDelete, onUpdate }) 
       <div className="space-y-3">
         {holdings.map((h) => (
           <div key={h.id} className="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
-            <span
-              className="font-semibold cursor-pointer hover:text-purple-400"
-              onClick={() => setHistoryTicker(h.ticker)}
-              title="Click to view price history"
-            >
-              {h.ticker}
-            </span>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span
+                  className="font-semibold cursor-pointer hover:text-purple-400"
+                  onClick={() => setHistoryTicker(h.ticker)}
+                  title="Click to view price history"
+                >
+                  {h.ticker}
+                </span>
+                {h.change_pct !== null && h.change_pct !== undefined && (
+                  <span
+                    className={`text-xs flex items-center gap-0.5 font-medium ${
+                      h.change_pct >= 0 ? 'text-green-400' : 'text-red-400'
+                    }`}
+                  >
+                    {h.change_pct >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                    {h.change_pct}%
+                  </span>
+                )}
+              </div>
+              {editingId !== h.id && h.price !== null && (
+                <span className="text-gray-400 text-xs">${h.price} / share</span>
+              )}
+            </div>
 
             {editingId === h.id ? (
               <div className="flex items-center gap-2">
@@ -70,10 +88,10 @@ export function PortfolioList({ holdings, loading, error, onDelete, onUpdate }) 
             ) : h.price !== null ? (
               <span
                 onClick={() => startEdit(h)}
-                className="cursor-pointer hover:text-purple-400"
+                className="cursor-pointer hover:text-purple-400 font-medium"
                 title="Click to edit shares"
               >
-                {h.shares} shares @ ${h.price} = ${h.value.toLocaleString()}
+                {h.shares} shares = ${h.value.toLocaleString()}
               </span>
             ) : (
               <span className="text-yellow-400 text-sm">Price temporarily unavailable</span>
