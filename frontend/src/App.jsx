@@ -3,6 +3,7 @@ import { usePortfolio } from './hooks/usePortfolio'
 import { useRisk } from './hooks/useRisk'
 import { LandingPage } from './components/LandingPage'
 import { Sidebar } from './components/Sidebar'
+import { OverviewTab } from './components/OverviewTab'
 import { AddHoldingForm } from './components/AddHoldingForm'
 import { PortfolioList } from './components/PortfolioList'
 import { PortfolioAllocationChart } from './components/PortfolioAllocationChart'
@@ -11,7 +12,7 @@ import { CorrelationHeatmap } from './components/CorrelationHeatmap'
 
 function App() {
   const [view, setView] = useState('landing') // 'landing' | 'dashboard'
-  const [activeTab, setActiveTab] = useState('portfolio')
+  const [activeTab, setActiveTab] = useState('overview')
 
   const { holdings, loading, error, refetch, deleteHolding, updateHolding } = usePortfolio()
   const { risk, loading: riskLoading, refetchRisk } = useRisk()
@@ -41,6 +42,7 @@ function App() {
         onBackToLanding={() => setView('landing')}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        holdings={holdings}
       />
 
       <div className="flex-1 flex flex-col h-screen">
@@ -52,6 +54,10 @@ function App() {
 
         <div className="flex-1 overflow-y-auto px-8 pb-8">
           <div key={activeTab} className="motion-safe:animate-[fadeSlide_0.35s_ease-out]">
+            {activeTab === 'overview' && (
+              <OverviewTab holdings={holdings} risk={risk} />
+            )}
+
             {activeTab === 'portfolio' && (
               <>
                 <AddHoldingForm onHoldingAdded={handleHoldingAdded} />
