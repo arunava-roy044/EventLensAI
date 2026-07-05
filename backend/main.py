@@ -33,27 +33,31 @@ def get_portfolio(db: Session = Depends(get_db)):
     for h in holdings:
         try:
             ticker_data = yf.Ticker(h.ticker)
-            hist = ticker_data.history(period="1d")
+            hist = ticker_data.history(period="5d")
 
             if hist.empty:
-                # No data available right now — skip pricing but still show the holding
                 result.append({
                     "id": h.id,
                     "ticker": h.ticker,
                     "shares": h.shares,
                     "price": None,
                     "value": None,
+                    "change_pct": None,
                     "error": "Price temporarily unavailable",
                 })
                 continue
 
             price = hist["Close"].iloc[-1]
+            prev_close = hist["Close"].iloc[-2] if len(hist) >= 2 else price
+            change_pct = ((price - prev_close) / prev_close) * 100 if prev_close else 0
+
             result.append({
                 "id": h.id,
                 "ticker": h.ticker,
                 "shares": h.shares,
                 "price": round(price, 2),
                 "value": round(price * h.shares, 2),
+                "change_pct": round(change_pct, 2),
             })
         except Exception as e:
             result.append({
@@ -62,6 +66,7 @@ def get_portfolio(db: Session = Depends(get_db)):
                 "shares": h.shares,
                 "price": None,
                 "value": None,
+                "change_pct": None,
                 "error": str(e),
             })
 
