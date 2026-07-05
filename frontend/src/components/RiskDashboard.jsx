@@ -1,37 +1,51 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { TrendingUp, DollarSign, AlertTriangle, Activity } from 'lucide-react'
+import { TabHeader } from './TabHeader'
 
 export function RiskDashboard({ risk, loading }) {
   if (loading) return <p className="mt-6 text-gray-400">Calculating risk metrics...</p>
-  
+
   if (!risk) return null
-  
+
   if (risk.error) {
     return (
-      <div className="mt-10 bg-gray-800 p-6 rounded-lg text-center text-gray-400">
+      <div className="bg-gray-800 p-6 rounded-lg text-center text-gray-400">
         <p>Add at least one holding to see risk analysis.</p>
       </div>
     )
   }
 
   return (
-    <div className="mt-10">
-      <h2 className="text-2xl font-bold text-purple-400 mb-4">Risk Analysis</h2>
+    <div>
+      <TabHeader
+        icon={TrendingUp}
+        title="Risk Analysis"
+        description="Quantitative risk metrics computed from your portfolio's real historical volatility."
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-gray-800 p-4 rounded-lg">
-          <p className="text-gray-400 text-sm">Portfolio Value</p>
+          <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+            <DollarSign size={14} /> Portfolio Value
+          </div>
           <p className="text-xl font-bold">${risk.portfolio_value.toLocaleString()}</p>
         </div>
         <div className="bg-gray-800 p-4 rounded-lg">
-          <p className="text-gray-400 text-sm">Value at Risk (95%, daily)</p>
+          <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+            <AlertTriangle size={14} /> Value at Risk (95%, daily)
+          </div>
           <p className="text-xl font-bold text-red-400">{risk.risk_metrics.var_95_daily_pct}%</p>
         </div>
         <div className="bg-gray-800 p-4 rounded-lg">
-          <p className="text-gray-400 text-sm">Sharpe Ratio</p>
+          <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+            <Activity size={14} /> Sharpe Ratio
+          </div>
           <p className="text-xl font-bold text-green-400">{risk.risk_metrics.sharpe_ratio}</p>
         </div>
         <div className="bg-gray-800 p-4 rounded-lg">
-          <p className="text-gray-400 text-sm">Annualized Volatility</p>
+          <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+            <TrendingUp size={14} /> Annualized Volatility
+          </div>
           <p className="text-xl font-bold">{risk.risk_metrics.annualized_volatility_pct}%</p>
         </div>
       </div>
