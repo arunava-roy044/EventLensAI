@@ -12,3 +12,4 @@ export const searchTickers = (query) => client.get('/search', { params: { q: que
 export const addHolding = (ticker, shares) => client.post('/portfolio', { ticker, shares })
 export const deleteHolding = (id) => client.delete(`/portfolio/${id}`)
 export const updateHolding = (id, shares) => client.put(`/portfolio/${id}`, { shares })
+export const getHistory = (ticker) => client.get(`/portfolio/history/${ticker}`)
