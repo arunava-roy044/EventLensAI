@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { getRisk } from '../api/client'
 
 export function useRisk() {
   const [risk, setRisk] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const fetchRisk = useCallback(() => {
+    setLoading(true)
     getRisk()
       .then((response) => {
         setRisk(response.data)
@@ -14,5 +15,9 @@ export function useRisk() {
       .catch(() => setLoading(false))
   }, [])
 
-  return { risk, loading }
+  useEffect(() => {
+    fetchRisk()
+  }, [fetchRisk])
+
+  return { risk, loading, refetchRisk: fetchRisk }
 }

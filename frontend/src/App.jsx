@@ -5,8 +5,23 @@ import { PortfolioList } from './components/PortfolioList'
 import { RiskDashboard } from './components/RiskDashboard'
 
 function App() {
-  const { holdings, loading, error, refetch, deleteHolding } = usePortfolio()
-  const { risk, loading: riskLoading } = useRisk()
+  const { holdings, loading, error, refetch, deleteHolding, updateHolding } = usePortfolio()
+  const { risk, loading: riskLoading, refetchRisk } = useRisk()
+
+  const handleHoldingAdded = () => {
+    refetch()
+    refetchRisk()
+  }
+
+  const handleDelete = (id) => {
+    deleteHolding(id)
+    refetchRisk()
+  }
+
+  const handleUpdate = (id, shares) => {
+    updateHolding(id, shares)
+    refetchRisk()
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
@@ -14,13 +29,14 @@ function App() {
         EventLens AI 🚀
       </h1>
 
-      <AddHoldingForm onHoldingAdded={refetch} />
+      <AddHoldingForm onHoldingAdded={handleHoldingAdded} />
 
       <PortfolioList
         holdings={holdings}
         loading={loading}
         error={error}
-        onDelete={deleteHolding}
+        onDelete={handleDelete}
+        onUpdate={handleUpdate}
       />
 
       <RiskDashboard risk={risk} loading={riskLoading} />

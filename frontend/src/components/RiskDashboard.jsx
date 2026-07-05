@@ -2,7 +2,16 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 export function RiskDashboard({ risk, loading }) {
   if (loading) return <p className="mt-6 text-gray-400">Calculating risk metrics...</p>
-  if (!risk || risk.error) return null
+  
+  if (!risk) return null
+  
+  if (risk.error) {
+    return (
+      <div className="mt-10 bg-gray-800 p-6 rounded-lg text-center text-gray-400">
+        <p>Add at least one holding to see risk analysis.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="mt-10">
