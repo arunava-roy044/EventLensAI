@@ -4,6 +4,7 @@ import { AddHoldingForm } from './components/AddHoldingForm'
 import { PortfolioList } from './components/PortfolioList'
 import { PortfolioAllocationChart } from './components/PortfolioAllocationChart'
 import { RiskDashboard } from './components/RiskDashboard'
+import { CorrelationHeatmap } from './components/CorrelationHeatmap'
 
 
 function App() {
@@ -44,6 +45,9 @@ function App() {
       <PortfolioAllocationChart holdings={holdings} />
 
       <RiskDashboard risk={risk} loading={riskLoading} />
+
+      <CorrelationHeatmap />
+      
     </div>
   )
 }
