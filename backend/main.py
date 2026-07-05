@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from risk_engine import calculate_portfolio_metrics, monte_carlo_simulation
+from risk_engine import calculate_portfolio_metrics, monte_carlo_simulation, calculate_correlation_matrix
 
 from database import engine, get_db, Base
 from models import Holding
@@ -176,3 +177,16 @@ def get_ticker_history(ticker: str, period: str = "6mo"):
     ]
 
     return {"ticker": ticker.upper(), "history": history}
+
+
+@app.get("/portfolio/correlation")
+def get_correlation(db: Session = Depends(get_db)):
+    holdings = db.query(Holding).all()
+
+    if len(holdings) < 2:
+        return {"error": "Add at least 2 holdings to see correlation"}
+
+    tickers = [h.ticker for h in holdings]
+    matrix = calculate_correlation_matrix(tickers)
+
+    return {"tickers": tickers, "matrix": matrix}

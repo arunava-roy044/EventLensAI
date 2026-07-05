@@ -82,3 +82,17 @@ def monte_carlo_simulation(tickers, weights, portfolio_value, days=30, simulatio
         "median_case": round(np.percentile(simulation_results, 50), 2),
         "best_case_95pct": round(np.percentile(simulation_results, 95), 2),
     }
+
+
+def calculate_correlation_matrix(tickers, period="6mo"):
+    returns = get_historical_returns(tickers, period=period)
+    corr_matrix = returns.corr()
+
+    result = []
+    for ticker_a in tickers:
+        row = {"ticker": ticker_a}
+        for ticker_b in tickers:
+            row[ticker_b] = round(corr_matrix.loc[ticker_a, ticker_b], 3)
+        result.append(row)
+
+    return result
