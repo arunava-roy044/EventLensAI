@@ -2,7 +2,9 @@ import { usePortfolio } from './hooks/usePortfolio'
 import { useRisk } from './hooks/useRisk'
 import { AddHoldingForm } from './components/AddHoldingForm'
 import { PortfolioList } from './components/PortfolioList'
+import { PortfolioAllocationChart } from './components/PortfolioAllocationChart'
 import { RiskDashboard } from './components/RiskDashboard'
+
 
 function App() {
   const { holdings, loading, error, refetch, deleteHolding, updateHolding } = usePortfolio()
@@ -38,6 +40,8 @@ function App() {
         onDelete={handleDelete}
         onUpdate={handleUpdate}
       />
+
+      <PortfolioAllocationChart holdings={holdings} />
 
       <RiskDashboard risk={risk} loading={riskLoading} />
     </div>
