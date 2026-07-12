@@ -21,18 +21,18 @@ A full-stack portfolio risk analytics platform that helps investors understand t
 ## Project Structure
 
 eventlens-ai/
-├── backend/
-│ ├── main.py # FastAPI routes
-│ ├── models.py # SQLAlchemy models
-│ ├── database.py # DB connection setup
-│ ├── risk_engine.py # VaR, Sharpe Ratio, Monte Carlo, correlation
-│ └── requirements.txt
-└── frontend/
-└── src/
-├── api/ # API client layer
-├── hooks/ # Custom React hooks (usePortfolio, useRisk)
-├── components/ # UI components
-└── App.jsx
+backend/
+main.py
+models.py
+database.py
+risk_engine.py
+requirements.txt
+frontend/
+src/
+api/
+hooks/
+components/
+App.jsx
 
 ## Getting Started
 
