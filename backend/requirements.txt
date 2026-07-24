@@ -46,3 +46,6 @@ urllib3==2.7.0
 uvicorn==0.50.0
 websockets==16.0
 yfinance==1.5.1
+google-cloud-bigquery==3.27.0
+lxml==5.3.0
+pandas-gbq==0.24.0
