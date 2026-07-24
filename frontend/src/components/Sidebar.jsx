@@ -1,4 +1,4 @@
-import { LayoutDashboard, Wallet, PieChart, TrendingUp, Grid3x3 } from 'lucide-react'
+import { LayoutDashboard, Wallet, PieChart, TrendingUp, Grid3x3, Zap } from 'lucide-react'
 
 const NAV_ITEMS = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { id: "allocation", label: "Allocation", icon: PieChart },
   { id: "risk", label: "Risk Analysis", icon: TrendingUp },
   { id: "correlation", label: "Correlation", icon: Grid3x3 },
+  { id: "event-impact", label: "Event Impact", icon: Zap },
 ]
 
 export function Sidebar({ onBackToLanding, activeTab, onTabChange, holdings }) {

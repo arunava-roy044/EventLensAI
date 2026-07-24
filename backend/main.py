@@ -3,11 +3,11 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from risk_engine import calculate_portfolio_metrics, monte_carlo_simulation
 from risk_engine import calculate_portfolio_metrics, monte_carlo_simulation, calculate_correlation_matrix
+from event_model import predict_event_impact
 
 from database import engine, get_db, Base
-from models import Holding
+from models import Holding, EventRecord
 
 Base.metadata.create_all(bind=engine)  # creates the holdings table if it doesn't exist
 
@@ -195,3 +195,60 @@ def get_correlation(db: Session = Depends(get_db)):
     matrix = calculate_correlation_matrix(tickers)
 
     return {"tickers": tickers, "matrix": matrix}
+
+
+class EventImpactRequest(BaseModel):
+    ticker: str
+    sentiment_label: str  # "very_negative" | "negative" | "neutral" | "positive" | "very_positive"
+    is_earnings_related: bool = False
+
+
+@app.post("/portfolio/event-impact")
+def predict_event_impact_route(req: EventImpactRequest, db: Session = Depends(get_db)):
+    try:
+        result = predict_event_impact(
+            ticker=req.ticker,
+            sentiment_label=req.sentiment_label,
+            is_earnings_related=req.is_earnings_related,
+        )
+    except ValueError as e:
+        return {"error": str(e)}
+    except Exception as e:
+        return {"error": f"Prediction failed: {str(e)}"}
+
+    # Persist the prediction
+    record = EventRecord(
+        ticker=req.ticker.upper(),
+        sentiment_label=req.sentiment_label,
+        is_earnings_related=req.is_earnings_related,
+        predicted_car_3day=result["predicted_car_3day"],
+        sector=result["sector"],
+    )
+    db.add(record)
+    db.commit()
+
+    return result
+
+
+@app.get("/portfolio/event-history")
+def get_event_history(db: Session = Depends(get_db)):
+    records = (
+        db.query(EventRecord)
+        .order_by(EventRecord.created_at.desc())
+        .limit(20)
+        .all()
+    )
+    return {
+        "history": [
+            {
+                "id": r.id,
+                "ticker": r.ticker,
+                "sentiment_label": r.sentiment_label,
+                "is_earnings_related": r.is_earnings_related,
+                "predicted_car_3day": r.predicted_car_3day,
+                "sector": r.sector,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            for r in records
+        ]
+    }

@@ -9,6 +9,7 @@ import { PortfolioList } from './components/PortfolioList'
 import { PortfolioAllocationChart } from './components/PortfolioAllocationChart'
 import { RiskDashboard } from './components/RiskDashboard'
 import { CorrelationHeatmap } from './components/CorrelationHeatmap'
+import { EventImpactTab } from './components/EventImpactTab'
 
 function App() {
   const [view, setView] = useState('landing') // 'landing' | 'dashboard'
@@ -81,6 +82,10 @@ function App() {
 
             {activeTab === 'correlation' && (
               <CorrelationHeatmap />
+            )}
+
+            {activeTab === 'event-impact' && (
+              <EventImpactTab />
             )}
           </div>
         </div>
